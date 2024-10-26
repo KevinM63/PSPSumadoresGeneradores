@@ -7,8 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Generador implements Runnable {
 
     private final List<Integer> numeros;
-    private Semaphore semaforoNormal;
-    private Semaphore semaforoNumero;
+    private final Semaphore semaforoNormal;
+    private final Semaphore semaforoNumero;
 
     public Generador(List<Integer> numeros, Semaphore semaforoNormal, Semaphore semaforoNumero) {
         this.numeros = numeros;
@@ -21,9 +21,15 @@ public class Generador implements Runnable {
         while (true) {
             //mete un numero aleatorio a la lista
             int numero = ThreadLocalRandom.current().nextInt(1, 11);
-            synchronized (numeros) {
+            try {
+                semaforoNormal.acquire();
                 numeros.add(numero);
-                numeros.notifyAll();
+                if (numeros.size()>1) {
+                    semaforoNumero.release(2);
+                }
+                semaforoNormal.release();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
             // se espera un tiempo aleatorio
             try {
