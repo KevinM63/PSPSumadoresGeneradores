@@ -1,14 +1,19 @@
 package com.dam;
 
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Sumador implements Runnable {
 
     private final List<Integer> numeros;
+    private Semaphore semaforoNormal;
+    private Semaphore semaforoNumero;
 
-    public Sumador(List<Integer> numeros) {
+    public Sumador(List<Integer> numeros, Semaphore semaforoNormal, Semaphore semaforoNumero) {
         this.numeros = numeros;
+        this.semaforoNormal = semaforoNormal;
+        this.semaforoNumero = semaforoNumero;
     }
 
     @Override
